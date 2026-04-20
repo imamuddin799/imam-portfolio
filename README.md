@@ -2,6 +2,8 @@
 
 A modern, full-featured developer portfolio built with **Next.js 16**, **Tailwind CSS v4**, and **TypeScript**. It automatically scans a local `projects/` folder and turns every project into a browsable, filterable card with a live demo (for React/HTML projects) and an in-browser code viewer with syntax highlighting.
 
+**Live Demo:** [https://imamuddin-ansari.vercel.app](https://imamuddin-ansari.vercel.app)
+
 > **This is a template.** Fork it, update `constants.ts` with your details, drop your projects into the `projects/` folder, and deploy.
 
 ---

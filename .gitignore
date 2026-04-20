@@ -12,9 +12,7 @@ projects/**/node_modules/
 projects/**/dist/
 projects/**/build/
 projects/**/.next/
-projects/imamuddin/
 
-public/
 # ── Environment files ─────────────────────────────────────────
 .env
 .env.local
