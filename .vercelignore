@@ -1,0 +1,21 @@
+# Nested project build artifacts
+projects/**/node_modules/
+projects/**/dist/
+projects/**/build/
+projects/**/.next/
+projects/**/.git/
+
+# Secrets
+projects/**/.env
+projects/**/.env.local
+projects/**/.env.production
+
+# OS / Editor
+**/.DS_Store
+**/Thumbs.db
+**/*.log
+.idea/
+.vscode/
+
+# Scripts not needed at runtime
+scripts/

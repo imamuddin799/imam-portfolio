@@ -1,0 +1,36 @@
+{
+  "name": "imam-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "build:projects": "node scripts/build-all.cjs",
+    "deploy": "node deploy.cjs",
+    "deploy:prod": "node deploy.cjs --prod",
+    "deploy:skip-build": "node deploy.cjs --skip-build --prod"
+  },
+  "dependencies": {
+    "@react-icons/all-files": "^4.1.0",
+    "@shikijs/core": "^4.0.2",
+    "lucide-react": "^1.8.0",
+    "next": "16.2.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-icons": "^5.6.0",
+    "shiki": "^4.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20.19.39",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "null-loader": "^4.0.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

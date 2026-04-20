@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@source "../src";
+
+/* ── CRITICAL: Tell Tailwind v4 to use class-based dark mode ── */
+@variant dark (&:where(.dark, .dark *));
+
+/* ── Custom theme tokens ── */
+@theme {
+  --color-brand-50:  #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+
+  --color-surface-light: #f8fafc;
+  --color-surface-dark:  #0a0f1a;
+  --color-card-light:    #ffffff;
+  --color-card-dark:     #111827;
+  --color-border-light:  #e2e8f0;
+  --color-border-dark:   #1e293b;
+
+  --font-sans:    var(--font-geist-sans), sans-serif;
+  --font-mono:    var(--font-geist-mono), monospace;
+  --font-display: var(--font-display), sans-serif;
+
+  --animate-fade-in:     fadeIn 0.5s ease-in-out;
+  --animate-slide-up:    slideUp 0.4s ease-out;
+  --animate-slide-right: slideRight 0.3s ease-out;
+  --animate-pulse-slow:  pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  --shadow-card:      0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-card-md:   0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-card-lg:   0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-card-dark: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-glow:      0 0 20px rgb(14 165 233 / 0.3);
+
+  @keyframes fadeIn {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes slideUp {
+    0%   { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideRight {
+    0%   { opacity: 0; transform: translateX(-12px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+}
+
+/* ── Smooth theme transition on ALL elements ── */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 300ms;
+  transition-timing-function: ease;
+}
+
+/* ── Exception: don't slow down animations and transforms ── */
+[class*="animate-"],
+[class*="transition-"],
+[class*="duration-"],
+button,
+a {
+  transition-property: background-color, border-color, color, fill, stroke,
+    opacity, transform, box-shadow;
+  transition-duration: 200ms;
+}
+
+/* ── Thin scrollbars ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+*::-webkit-scrollbar        { width: 4px; height: 4px; }
+*::-webkit-scrollbar-track  { background: transparent; }
+*::-webkit-scrollbar-thumb  { background: rgba(148, 163, 184, 0.3); border-radius: 999px; }
+*::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.55); }
+*::-webkit-scrollbar-corner { background: transparent; }
