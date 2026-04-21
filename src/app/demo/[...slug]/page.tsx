@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function DemoPage({ params }: Props) {
+    console.log('Demo page execution start');
     const { slug } = await params;
     const project = getProjectBySlug(slug);
     if (!project) notFound();
@@ -26,6 +27,10 @@ export default async function DemoPage({ params }: Props) {
     const slugPath = slug.join("/");
     const demoSrc = resolveDemoSrc(project);
 
+    console.log('slug>>>', slug);
+    console.log('project>>>', project);
+    console.log('slug path>>>', slugPath);
+    console.log('demo src>>>', demoSrc);
     return (
         <DemoViewer
             project={project}
