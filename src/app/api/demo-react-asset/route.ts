@@ -40,25 +40,25 @@ export async function GET(req: NextRequest) {
     const slugParam = searchParams.get("slug");
     const filePath = searchParams.get("file");
 
-    console.log('search param', searchParams);
-    console.log('slug param', slugParam);
-    console.log('file param', filePath);
+    // console.log('search param', searchParams);
+    // console.log('slug param', slugParam);
+    // console.log('file param', filePath);
 
     if (!slugParam || !filePath) {
         return new NextResponse("Missing slug or file param", { status: 400 });
     }
 
-    console.log("Search Parameter>>>", searchParams);
-    console.log("Slug Parameter>>>", slugParam);
-    console.log("File Path>>>", filePath);
+    // console.log("Search Parameter>>>", searchParams);
+    // console.log("Slug Parameter>>>", slugParam);
+    // console.log("File Path>>>", filePath);
 
     const slug = decodeURIComponent(slugParam).split("/");
     const buildDir = path.join(BUILDS_ROOT, ...slug);
     const fullPath = path.join(buildDir, decodeURIComponent(filePath));
 
-    console.log('Decoded URI Component>>>', slug);
-    console.log('Build Directory>>>', buildDir);
-    console.log('Full Path>>>', fullPath);
+    // console.log('Decoded URI Component>>>', slug);
+    // console.log('Build Directory>>>', buildDir);
+    // console.log('Full Path>>>', fullPath);
     // Security: must stay within builds root
     if (!buildDir.startsWith(BUILDS_ROOT) || !fullPath.startsWith(buildDir)) {
         return new NextResponse("Forbidden", { status: 403 });

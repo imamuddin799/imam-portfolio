@@ -27,10 +27,10 @@ export default async function DemoPage({ params }: Props) {
     const slugPath = slug.join("/");
     const demoSrc = resolveDemoSrc(project);
 
-    console.log('slug>>>', slug);
-    console.log('project>>>', project);
-    console.log('slug path>>>', slugPath);
-    console.log('demo src>>>', demoSrc);
+    // console.log('slug>>>', slug);
+    // console.log('project>>>', project);
+    // console.log('slug path>>>', slugPath);
+    // console.log('demo src>>>', demoSrc);
     return (
         <DemoViewer
             project={project}

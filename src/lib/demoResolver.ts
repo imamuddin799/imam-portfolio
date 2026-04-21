@@ -14,7 +14,7 @@ export function resolveDemoSrc(project: Project): string | null {
 
     const slugStr = encodeURIComponent(project.slug.join("/"));
 
-    console.log('slug string>>>', slugStr);
+    // console.log('slug string>>>', slugStr);
     if (project.type === "react") {
         // Check if a build exists in public/builds/
         const buildDir = path.join(
@@ -24,10 +24,10 @@ export function resolveDemoSrc(project: Project): string | null {
             ...project.slug
         );
 
-        console.log('Build Directory>>>', buildDir);
+        // console.log('Build Directory>>>', buildDir);
 
         const hasBuilt = fs.existsSync(path.join(buildDir, "index.html"));
-        console.log('Has Built>>>', hasBuilt);
+        // console.log('Has Built>>>', hasBuilt);
         if (hasBuilt) {
             // Serve through API so we can inject correct base tag
             return `/api/demo-react?slug=${slugStr}`;

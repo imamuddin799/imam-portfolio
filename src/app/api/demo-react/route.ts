@@ -15,8 +15,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slugParam = searchParams.get("slug");
 
-  console.log('Search Param>>>', searchParams);
-  console.log('Slug Param>>>', slugParam);
+  // console.log('Search Param>>>', searchParams);
+  // console.log('Slug Param>>>', slugParam);
   if (!slugParam) {
     return new NextResponse("Missing slug param", { status: 400 });
   }
@@ -25,9 +25,9 @@ export async function GET(req: NextRequest) {
   const buildDir  = path.join(BUILDS_ROOT, ...slug);
   const indexPath = path.join(buildDir, "index.html");
 
-  console.log('Decoded URI Component>>>', slug);
-  console.log('Build Directory>>>', buildDir);
-  console.log('Index Path>>>', indexPath);
+  // console.log('Decoded URI Component>>>', slug);
+  // console.log('Build Directory>>>', buildDir);
+  // console.log('Index Path>>>', indexPath);
 
   // Security
   if (!buildDir.startsWith(BUILDS_ROOT)) {
@@ -43,9 +43,9 @@ export async function GET(req: NextRequest) {
   let html = fs.readFileSync(indexPath, "utf-8");
   const encodedSlug = encodeURIComponent(slugParam);
   const apiBase     = `/api/demo-react-asset?slug=${encodedSlug}&file=`;
-  console.log('index html', html);
-  console.log('encodedSlug', encodedSlug);
-  console.log('apiBase', apiBase);
+  // console.log('index html', html);
+  // console.log('encodedSlug', encodedSlug);
+  // console.log('apiBase', apiBase);
 
 
   // Rewrite src="..." and href="..." that are local paths (not already API routes, not external)
@@ -143,7 +143,7 @@ export async function GET(req: NextRequest) {
   html = html.includes("<head>")
     ? html.replace("<head>", "<head>" + shim)
     : shim + html;
-  console.log('shim+html', html);
+  // console.log('shim+html', html);
   return new NextResponse(html, {
     headers: {
       "Content-Type":            "text/html; charset=utf-8",

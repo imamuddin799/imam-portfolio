@@ -5,7 +5,7 @@ build/
 
 # ── Dependencies ─────────────────────────────────────────────
 node_modules/
-package-lock.json
+
 # ── Projects inside imamuddin/ ────────────────────────────────────
 # Exclude node_modules, build outputs from ALL nested projects
 projects/**/node_modules/
