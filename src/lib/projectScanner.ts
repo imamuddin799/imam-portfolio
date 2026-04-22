@@ -129,6 +129,9 @@ function scanProject(
     day: string | null,
     slugPath: string[]
 ): Project | null {
+
+    // console.log('Scan Project');
+    // console.log('DirPath', dirPath, 'Day', day, 'Slug Path', slugPath);
     try {
         const stats = fs.statSync(dirPath);
         const type = detectProjectType(dirPath);
@@ -136,6 +139,13 @@ function scanProject(
         const fileTree = buildFileTree(dirPath, dirPath);
         const name = path.basename(dirPath);
         const id = slugPath.map(slugify).join("-");
+
+        // console.log('Stats', stats);
+        // console.log('Type', type);
+        // console.log('Tags', tags);
+        // console.log('File Tree', fileTree);
+        // console.log('Name', name);
+        // console.log('ID', id);
 
         return {
             id,
@@ -158,8 +168,15 @@ function scanProject(
 // ─── Check if directory is a project root ─────────────────────────────────────
 
 function isProjectRoot(dirPath: string): boolean {
+
+    // console.log('\nIs Project Root', dirPath, '\n');
+    
     const files = fs.readdirSync(dirPath);
     const fileSet = new Set(files.map((f) => f.toLowerCase()));
+    
+    // console.log('Files in directory:', files);
+    // console.log('File Set', fileSet);
+    
     return (
         fileSet.has("package.json") ||
         fileSet.has("index.html") ||
@@ -177,27 +194,46 @@ export function scanAllProjects(): Project[] {
     const projects: Project[] = [];
     const topLevel = fs.readdirSync(PROJECTS_ROOT, { withFileTypes: true });
 
+    // console.log('Project Root', PROJECTS_ROOT);
+    // console.log('Top Level:', topLevel);
+
     for (const topEntry of topLevel) {
         if (!topEntry.isDirectory()) continue;
+
+        // console.log('Top Entry:', topEntry);
+        // console.log('Top Entry Name:', topEntry.name);
 
         const topPath = path.join(PROJECTS_ROOT, topEntry.name);
         const dayLabel = topEntry.name.startsWith("Day") ? topEntry.name : null;
 
+        // console.log('Top Path:', topPath);
+        // console.log('Day Label:', dayLabel);
+
         // Top-level folder is itself a project
         if (isProjectRoot(topPath)) {
+            // console.log('Top Path is a project root');
             const p = scanProject(topPath, dayLabel, [topEntry.name]);
+            // console.log('Scanned Project:', p);
             if (p) projects.push(p);
             continue;
         }
 
+        // console.log('Top Path', topPath, 'is not a project root, scanning children...');
         // Scan children (e.g. Day 2 → props-demo, another-project)
         const children = fs.readdirSync(topPath, { withFileTypes: true });
+
+        // console.log('Children', children);
+
         for (const child of children) {
             if (!child.isDirectory()) continue;
             const childPath = path.join(topPath, child.name);
 
+            // console.log('Child Path:', childPath);
+
             if (isProjectRoot(childPath)) {
+                // console.log('Child Path is a project root', childPath, 'Day Label:', dayLabel, 'Slug Path:', [topEntry.name, child.name]);
                 const p = scanProject(childPath, dayLabel, [topEntry.name, child.name]);
+                // console.log('Child Scanned Project:', p);
                 if (p) projects.push(p);
             } else {
                 // One more level deep (e.g. tasks/task1/)
@@ -223,11 +259,70 @@ export function scanAllProjects(): Project[] {
 
 // ─── Get single project ───────────────────────────────────────────────────────
 
+// export function getProjectBySlug(slug: string[]): Project | null {
+//     console.log('Get Project By Slug, Received Slug:', slug);
+//     const all = scanAllProjects();
+//     const project = all.find((p) => JSON.stringify(p.slug) === JSON.stringify(slug)) ?? null
+//     console.log('Found Project By Slug:', project);
+//     return project;
+// }
+
 export function getProjectBySlug(slug: string[]): Project | null {
-    const all = scanAllProjects();
-    return (
-        all.find((p) => JSON.stringify(p.slug) === JSON.stringify(slug)) ?? null
-    );
+    // console.log("Get Project By Slug (Depth-aware):", slug);
+
+    if (!slug?.length) return null;
+
+    const basePath = path.join(PROJECTS_ROOT, ...slug);
+
+    // सुरक्षा: prevent path traversal
+    if (!basePath.startsWith(PROJECTS_ROOT)) {
+        console.warn("Invalid path");
+        return null;
+    }
+
+    if (!fs.existsSync(basePath)) {
+        console.log("Path does not exist");
+        return null;
+    }
+
+    const dayLabel = slug[0]?.startsWith("Day") ? slug[0] : null;
+
+    // ── Case 1: exact path is project root ─────────────────────
+    if (isProjectRoot(basePath)) {
+        console.log("Direct project root");
+        return scanProject(basePath, dayLabel, slug);
+    }
+
+    // ── Case 2: check children ─────────────────────────────────
+    const children = fs.readdirSync(basePath, { withFileTypes: true });
+
+    for (const child of children) {
+        if (!child.isDirectory()) continue;
+
+        const childPath = path.join(basePath, child.name);
+
+        if (isProjectRoot(childPath)) {
+            console.log("Found project at child level:", child.name);
+            return scanProject(childPath, dayLabel, [...slug, child.name]);
+        }
+
+        // ── Case 3: check grandchildren (one more level) ────────
+        const grandchildren = fs.readdirSync(childPath, { withFileTypes: true });
+
+        for (const gc of grandchildren) {
+            if (!gc.isDirectory()) continue;
+
+            const gcPath = path.join(childPath, gc.name);
+
+            if (isProjectRoot(gcPath)) {
+                console.log("Found project at grandchild level:", gc.name);
+                return scanProject(gcPath, dayLabel, [...slug, child.name, gc.name]);
+            }
+        }
+    }
+
+    // console.log("No project found");
+    return null;
 }
 
 // ─── Get file content ─────────────────────────────────────────────────────────

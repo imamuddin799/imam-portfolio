@@ -11,7 +11,7 @@ import path from "path";
 const BUILDS_ROOT = path.join(process.cwd(), "public", "builds");
 
 export async function GET(req: NextRequest) {
-  console.log('demo-react execution start');
+  // console.log('demo-react execution start');
   const { searchParams } = new URL(req.url);
   const slugParam = searchParams.get("slug");
 
@@ -65,6 +65,8 @@ export async function GET(req: NextRequest) {
     return `${attr}="${apiBase}${filePart}"`;
   });
 
+  // console.log('Rewritten html replaced paths:', html);
+
   // Rewrite url(/...) in inline styles — skip already-rewritten and external
   html = html.replace(/url\(["']?([^"')]+)["']?\)/g, (match, val) => {
     if (
@@ -78,6 +80,8 @@ export async function GET(req: NextRequest) {
     const filePart = val.startsWith("/") ? val.slice(1) : val;
     return `url("${apiBase}${filePart}")`;
   });
+
+  // console.log('Rewritten html replaced urls:', html);
 
   // Runtime shim — catches dynamic asset loads from the JS bundle at runtime.
   // These can't be patched at HTML level since Vite generates them dynamically.

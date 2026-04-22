@@ -35,7 +35,7 @@ const MIME: Record<string, string> = {
 };
 
 export async function GET(req: NextRequest) {
-    console.log('demo-react-asset execution start');
+    // console.log('demo-react-asset execution start');
     const { searchParams } = new URL(req.url);
     const slugParam = searchParams.get("slug");
     const filePath = searchParams.get("file");
@@ -44,9 +44,11 @@ export async function GET(req: NextRequest) {
     // console.log('slug param', slugParam);
     // console.log('file param', filePath);
 
+    // console.log('Cheking Slug and FilePath availability');
     if (!slugParam || !filePath) {
         return new NextResponse("Missing slug or file param", { status: 400 });
     }
+    // console.log('Checking Slug and FilePath availability>>>Pass');
 
     // console.log("Search Parameter>>>", searchParams);
     // console.log("Slug Parameter>>>", slugParam);
@@ -60,13 +62,17 @@ export async function GET(req: NextRequest) {
     // console.log('Build Directory>>>', buildDir);
     // console.log('Full Path>>>', fullPath);
     // Security: must stay within builds root
+
+    // console.log('Checking BuildDir Start with', BUILDS_ROOT, 'and Full Path starts with', buildDir);
     if (!buildDir.startsWith(BUILDS_ROOT) || !fullPath.startsWith(buildDir)) {
         return new NextResponse("Forbidden", { status: 403 });
     }
+    // console.log('Checking BuildDir and FullPath>>>pass');
 
     let resolvedPath = fullPath;
 
     // 🔁 Handle legacy src/assets paths
+    // console.log('Before handle legacy resolved path>>>', resolvedPath);
     if (!fs.existsSync(resolvedPath) && filePath.startsWith("src/assets/")) {
         const fileName = path.basename(filePath);
 
@@ -82,15 +88,50 @@ export async function GET(req: NextRequest) {
             }
         }
     }
+    // console.log('After handle legacy resolved path>>>', resolvedPath);
 
+    // console.log('Checking file available or not');
     if (!fs.existsSync(resolvedPath)) {
         return new NextResponse("Asset not found: " + filePath, { status: 404 });
     }
+    // console.log('Checking file available or not>>>pass');
 
-    const ext = fullPath.split(".").pop()?.toLowerCase() ?? "";
+    const ext = resolvedPath.split(".").pop()?.toLowerCase() ?? "";
     const mimeType = MIME[ext] ?? "application/octet-stream";
+
+    // ── Special handling for JS/CSS (rewrite sourceMappingURL) ──
+    // console.log('Handling JS/CSS rewrite sourceMapping');
+    if (ext === "js" || ext === "css") {
+        let content = fs.readFileSync(resolvedPath, "utf-8");
+
+        // console.log("Content Before Replacement", content);
+        content = content.replace(
+            /sourceMappingURL=(.+)$/gm,
+            (match, mapFile) => {
+                const encodedSlug = encodeURIComponent(slugParam);
+
+                // 🔑 derive correct relative path
+                const fileDir = path.posix.dirname(filePath); // NOT resolvedPath
+                const mapPath = path.posix.join(fileDir, mapFile.trim());
+
+                return `sourceMappingURL=/api/demo-react-asset?slug=${encodedSlug}&file=${mapPath}`;
+            }
+        );
+        // console.log('Content After replacement', content);
+
+        return new NextResponse(content, {
+            headers: {
+                "Content-Type": mimeType,
+                "Cache-Control": "public, max-age=3600",
+                "Access-Control-Allow-Origin": "*",
+            },
+        });
+    }
+
+    // ── Default: binary assets ──
     const buffer = fs.readFileSync(resolvedPath);
 
+    // console.log('Default Binary Assets', buffer);
     return new NextResponse(buffer, {
         headers: {
             "Content-Type": mimeType,

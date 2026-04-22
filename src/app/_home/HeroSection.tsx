@@ -129,7 +129,7 @@ export function HeroSection() {
                                 <ArrowRight size={16} />
                             </Link>
                             <a
-                                href="/resume.pdf"
+                                href="/files/Imamuddin_resume.pdf"
                                 download
                                 className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-card-dark hover:border-brand-500/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 shadow-sm"
                             >

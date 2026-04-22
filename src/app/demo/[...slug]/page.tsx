@@ -10,6 +10,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
+    // console.log('Get Project By Slug Called By Generate Meta');
     const project = getProjectBySlug(slug);
     if (!project) return { title: "Demo Not Found" };
     return {
@@ -19,8 +20,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function DemoPage({ params }: Props) {
-    console.log('Demo page execution start');
+    // console.log('Demo page execution start');
     const { slug } = await params;
+    // console.log("Get Project By Slug Called By Demo Page");
     const project = getProjectBySlug(slug);
     if (!project) notFound();
 
@@ -31,6 +33,7 @@ export default async function DemoPage({ params }: Props) {
     // console.log('project>>>', project);
     // console.log('slug path>>>', slugPath);
     // console.log('demo src>>>', demoSrc);
+    // console.log('Demo Viewer Calling From Demo Page');
     return (
         <DemoViewer
             project={project}
