@@ -18,12 +18,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CodeViewerPage({ params }: Props) {
+    // console.log('Code Viewer Page Executing');
     const { slug } = await params;
+    // console.log('Slug Received for Code View:', slug);
     const project = getProjectBySlug(slug);
     if (!project) notFound();
 
     const slugPath = slug.join("/");
-
+    // console.log("Slug Path for Code View:", slugPath);
+    // console.log('Code viewer client called from code viewer page');
     return (
         <CodeViewerClient
             project={project}

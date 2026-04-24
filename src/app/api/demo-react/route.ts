@@ -101,14 +101,19 @@ export async function GET(req: NextRequest) {
   }
 
   function rewrite(url) {
+    // console.log('Check Url to Rewrite:', url);
     return shouldRewrite(url) ? API + url.slice(1) : url;
   }
 
   // Patch img elements via MutationObserver
   function fixImg(img) {
+    // console.log('Image to fix Url:', img.getAttribute("src"));
     var src = img.getAttribute("src");
+    // console.log('Src:', src);
     if (shouldRewrite(src)) img.setAttribute("src", rewrite(src));
+    // console.log('Fixed Image Url', img.getAttribute("src"));
     var srcset = img.getAttribute("srcset");
+    // console.log('SrcSet:', srcset);
     if (srcset) {
       img.setAttribute("srcset", srcset.replace(/([^\s,]+)\s*/g, function(m, u) {
         return shouldRewrite(u) ? rewrite(u) + " " : m;
@@ -129,16 +134,21 @@ export async function GET(req: NextRequest) {
 
   // Patch fetch
   var _fetch = window.fetch;
+  // console.log('_fetch window.fetch:', _fetch);
   window.fetch = function(input, init) {
     if (typeof input === "string" && shouldRewrite(input)) input = rewrite(input);
+    // console.log('this', this, 'input', input, 'init', init);
     return _fetch.call(this, input, init);
   };
 
   // Patch XHR
   var _open = XMLHttpRequest.prototype.open;
+  // console.log('_open XMLHttpRequest.prototype.open:', _open);
   XMLHttpRequest.prototype.open = function() {
     var args = Array.prototype.slice.call(arguments);
+    // console.log('Args', args);
     if (typeof args[1] === "string" && shouldRewrite(args[1])) args[1] = rewrite(args[1]);
+    // console.log('this', this, 'args', args);
     return _open.apply(this, args);
   };
 })();

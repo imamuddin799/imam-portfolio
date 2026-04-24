@@ -17,6 +17,9 @@ const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp", "t
 const PDF_EXTS = ["pdf"];
 
 export function CodeViewerClient({ project, slugPath }: Props) {
+    // console.log('Code viewer client executing');
+    // console.log('Project Received', project);
+    // console.log('Slug path received', slugPath);
     const [selectedPath, setSelectedPath] = useState<string | null>(null);
     const [selectedExt, setSelectedExt] = useState<string | undefined>(undefined);
     const [content, setContent] = useState<string | null>(null);
@@ -26,6 +29,8 @@ export function CodeViewerClient({ project, slugPath }: Props) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
     const handleSelectFile = useCallback(async (path: string, ext: string | undefined) => {
+        // console.log('HandleSelectFile Function executing');
+        // console.log('Props path', path, 'Extention', ext);
         if (path === selectedPath) return;
 
         setSelectedPath(path);
@@ -48,11 +53,13 @@ export function CodeViewerClient({ project, slugPath }: Props) {
         if (window.innerWidth < 768) setSidebarOpen(false);
 
         try {
+            // console.log('Fetching Content for selected file:', path);
             const res = await fetch(
                 `/api/file-content?slug=${encodeURIComponent(slugPath)}&file=${encodeURIComponent(path)}`
             );
             if (!res.ok) throw new Error("Failed");
             const data = await res.json();
+            // console.log('Fetched Content', data);
             setContent(data.content ?? null);
             setHighlightedDark(data.highlightedDark ?? null);
             setHighlightedLight(data.highlightedLight ?? null);
@@ -116,8 +123,8 @@ export function CodeViewerClient({ project, slugPath }: Props) {
                 {/* File Tree sidebar */}
                 <div
                     className={`shrink-0 overflow-hidden transition-all duration-300
-            ${sidebarOpen ? "w-64" : "w-0"}
-            md:w-64 absolute md:relative z-10 h-full`}
+                                ${sidebarOpen ? "w-64" : "w-0"}
+                                md:w-64 absolute md:relative z-10 h-full`}
                 >
                     <div className="w-64 h-full">
                         <FileTree

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { LayoutGrid, List, Layers } from "lucide-react";
 import { ProjectFilters } from "@/components/projects/ProjectFilters";
 import { ProjectCard } from "@/components/projects/ProjectCard";
@@ -203,19 +204,19 @@ export function ProjectsClient({ projects }: Props) {
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
                                 {project.hasLiveDemo && (
-                                    <a
+                                    <Link
                                         href={`/demo/${project.slug.join("/")}`}
                                         className="px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold transition-colors"
                                     >
                                         Demo
-                                    </a>
+                                    </Link>
                                 )}
-                                <a
+                                <Link
                                     href={`/code/${project.slug.join("/")}`}
                                     className="px-4 py-2 rounded-lg border border-border-light dark:border-border-dark hover:border-brand-500/50 text-slate-600 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 text-xs font-semibold transition-all duration-200"
                                 >
                                     Code
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     ))}

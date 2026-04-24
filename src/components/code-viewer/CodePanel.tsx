@@ -231,9 +231,8 @@ export function CodePanel({
                 {highlighted ? (
                     /* Shiki highlighted — background comes from shiki theme, fully correct */
                     <div
-                        className={`min-h-full text-sm leading-relaxed
-              [&>pre]:!bg-transparent [&>pre]:p-6 [&>pre]:min-h-full
-              ${wordWrap
+                        className={`min-h-full text-sm leading-relaxed [&>pre]:!bg-transparent [&>pre]:p-6 [&>pre]:min-h-full
+                            ${wordWrap
                                 ? "[&>pre]:whitespace-pre-wrap [&>pre]:break-all"
                                 : "[&>pre]:whitespace-pre"
                             }`}
