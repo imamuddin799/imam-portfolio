@@ -226,7 +226,7 @@ export function scanAllProjects(): Project[] {
 
         for (const child of children) {
             if (!child.isDirectory()) continue;
-            const childPath = path.join(topPath, child.name);
+            const childPath = path.join(/*turbopackIgnore: true*/ topPath, child.name);
 
             // console.log('Child Path:', childPath);
 
