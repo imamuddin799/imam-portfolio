@@ -1,9 +1,8 @@
 "use client";
-
-import { useState } from "react";
-import { Copy, Check, ChevronRight, WrapText } from "lucide-react";
-import { getFileIcon } from "@/components/code-viewer/fileIcons";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { useState } from "react";
+import { getFileIcon } from "@/components/code-viewer/fileIcons";
+import { Check, ChevronRight, Code2, Copy, Eye, WrapText } from "lucide-react";
 
 interface Props {
     filePath: string | null;
@@ -12,6 +11,8 @@ interface Props {
     lineCount: number;
     wordWrap: boolean;
     onToggleWrap: () => void;
+    showPreview: boolean;          // ← new
+    onTogglePreview: () => void;   // ← new
 }
 
 export function CodeToolbar({
@@ -21,6 +22,8 @@ export function CodeToolbar({
     lineCount,
     wordWrap,
     onToggleWrap,
+    showPreview,
+    onTogglePreview,
 }: Props) {
     const [copied, setCopied] = useState(false);
     const { theme } = useTheme();
@@ -30,6 +33,8 @@ export function CodeToolbar({
     const border = isDark ? "#1e293b" : "#e2e8f0";
     const textMuted = isDark ? "#6b7280" : "#6b7280";
     const textNormal = isDark ? "#9ca3af" : "#4b5563";
+
+    const isMarkdown = ext === "md";  // ← new
 
     async function handleCopy() {
         if (!content) return;
@@ -71,27 +76,50 @@ export function CodeToolbar({
             {/* Controls */}
             <div className="flex items-center gap-1.5 shrink-0 ml-3">
 
-                {/* Line count */}
-                <span className="text-xs hidden sm:block" style={{ color: textMuted }}>
-                    {lineCount} line{lineCount !== 1 ? "s" : ""}
-                </span>
+                {/* Line count — hide in preview mode */}
+                {!showPreview && (
+                    <span className="text-xs hidden sm:block" style={{ color: textMuted }}>
+                        {lineCount} line{lineCount !== 1 ? "s" : ""}
+                    </span>
+                )}
 
-                {/* Word wrap toggle */}
-                <button
-                    onClick={onToggleWrap}
-                    title={wordWrap ? "Disable word wrap" : "Enable word wrap"}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all duration-200"
-                    style={{
-                        background: wordWrap ? "rgba(14,165,233,0.1)" : "transparent",
-                        borderColor: wordWrap ? "rgba(14,165,233,0.4)" : border,
-                        color: wordWrap ? "#0ea5e9" : textNormal,
-                    }}
-                >
-                    <WrapText size={12} />
-                    <span className="hidden sm:inline">Wrap</span>
-                </button>
+                {/* Word wrap toggle — hide in preview mode */}
+                {!showPreview && (
+                    <button
+                        onClick={onToggleWrap}
+                        title={wordWrap ? "Disable word wrap" : "Enable word wrap"}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all duration-200"
+                        style={{
+                            background: wordWrap ? "rgba(14,165,233,0.1)" : "transparent",
+                            borderColor: wordWrap ? "rgba(14,165,233,0.4)" : border,
+                            color: wordWrap ? "#0ea5e9" : textNormal,
+                        }}
+                    >
+                        <WrapText size={12} />
+                        <span className="hidden sm:inline">Wrap</span>
+                    </button>
+                )}
 
-                {/* Copy button */}
+                {/* Markdown preview toggle — only for .md files */}
+                {isMarkdown && (
+                    <button
+                        onClick={onTogglePreview}
+                        title={showPreview ? "View source" : "Preview markdown"}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all duration-200"
+                        style={{
+                            background: showPreview ? "rgba(14,165,233,0.1)" : "transparent",
+                            borderColor: showPreview ? "rgba(14,165,233,0.4)" : border,
+                            color: showPreview ? "#0ea5e9" : textNormal,
+                        }}
+                    >
+                        {showPreview
+                            ? <><Code2 size={12} /><span className="hidden sm:inline">Code</span></>
+                            : <><Eye size={12} /><span className="hidden sm:inline">Preview</span></>
+                        }
+                    </button>
+                )}
+
+                {/* Copy — always visible */}
                 <button
                     onClick={handleCopy}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all duration-200"
@@ -103,7 +131,7 @@ export function CodeToolbar({
                 >
                     {copied
                         ? <><Check size={12} /> Copied</>
-                        : <><Copy size={12} />  Copy</>
+                        : <><Copy size={12} /><span className="hidden sm:inline"> Copy</span></>
                     }
                 </button>
             </div>

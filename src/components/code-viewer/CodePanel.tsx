@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CodeToolbar } from "@/components/code-viewer/CodeToolbar";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { FileText, MousePointerClick } from "lucide-react";
+import { markdownToHtml } from "@/lib/markdownToHtml";
 
 interface Props {
     filePath: string | null;
@@ -39,9 +40,34 @@ export function CodePanel({
 }: Props) {
     const { theme } = useTheme();
     const [wordWrap, setWordWrap] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);  // ← new state for toggling markdown preview
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const isDark = theme === "dark";
+
+    const mdProse = isDark
+        ? {
+            "--md-text": "#e6edf3",
+            "--md-muted": "#8b949e",
+            "--md-border": "#1e293b",
+            "--md-code-bg": "#161b22",
+            "--md-heading": "#e6edf3",
+            "--md-link": "#58a6ff",
+            "--md-blockquote": "#8b949e",
+            "--md-hr": "#21262d",
+            "--md-bg": "#0d1117",
+        }
+        : {
+            "--md-text": "#24292f",
+            "--md-muted": "#57606a",
+            "--md-border": "#d0d7de",
+            "--md-code-bg": "#f6f8fa",
+            "--md-heading": "#1f2328",
+            "--md-link": "#0969da",
+            "--md-blockquote": "#57606a",
+            "--md-hr": "#d0d7de",
+            "--md-bg": "#ffffff",
+        };
     const highlighted = isDark ? highlightedDark : highlightedLight;
     const codeBg = isDark ? DARK_CODE_BG : LIGHT_CODE_BG;
     const codeFg = isDark ? DARK_CODE_FG : LIGHT_CODE_FG;
@@ -122,6 +148,8 @@ export function CodePanel({
                     lineCount={0}
                     wordWrap={wordWrap}
                     onToggleWrap={() => setWordWrap((v) => !v)}
+                    showPreview={false}
+                    onTogglePreview={() => { }}
                 />
                 <div
                     className="flex-1 overflow-auto flex items-center justify-center p-6"
@@ -170,6 +198,8 @@ export function CodePanel({
                     lineCount={0}
                     wordWrap={wordWrap}
                     onToggleWrap={() => setWordWrap((v) => !v)}
+                    showPreview={false}
+                    onTogglePreview={() => { }}
                 />
                 <div className="flex-1 overflow-hidden">
                     <embed
@@ -207,6 +237,7 @@ export function CodePanel({
                 <CodeToolbar
                     filePath={filePath} ext={ext} content="" lineCount={0}
                     wordWrap={wordWrap} onToggleWrap={() => setWordWrap((v) => !v)}
+                    showPreview={false} onTogglePreview={() => { }}
                 />
                 <div className="flex-1 flex items-center justify-center" style={{ color: codeFg }}>
                     <p className="text-sm opacity-50">Cannot preview this file type</p>
@@ -225,14 +256,24 @@ export function CodePanel({
                 lineCount={lineCount}
                 wordWrap={wordWrap}
                 onToggleWrap={() => setWordWrap((v) => !v)}
+                showPreview={showPreview}              // ← new
+                onTogglePreview={() => setShowPreview((v) => !v)}  // ← new
             />
 
             <div ref={scrollRef} className="flex-1 overflow-auto">
-                {highlighted ? (
-                    /* Shiki highlighted — background comes from shiki theme, fully correct */
+
+                {/* ── Markdown preview ── */}
+                {showPreview && ext === "md" ? (
+                    <div
+                        className="md-preview px-10 py-8 max-w-4xl mx-auto"
+                        style={{ ...mdProse, background: mdProse["--md-bg"] } as React.CSSProperties}
+                        dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }}
+                    />
+                ) : highlighted ? (
+                    /* Shiki highlighted */
                     <div
                         className={`min-h-full text-sm leading-relaxed [&>pre]:!bg-transparent [&>pre]:p-6 [&>pre]:min-h-full
-                            ${wordWrap
+                        ${wordWrap
                                 ? "[&>pre]:whitespace-pre-wrap [&>pre]:break-all"
                                 : "[&>pre]:whitespace-pre"
                             }`}
@@ -241,7 +282,6 @@ export function CodePanel({
                 ) : (
                     /* Fallback plain text with line numbers */
                     <div className="flex min-h-full">
-                        {/* Line numbers */}
                         <div
                             className="select-none text-right pr-4 py-6 pl-4 text-xs font-mono border-r shrink-0"
                             style={{
@@ -256,12 +296,10 @@ export function CodePanel({
                                 <div key={i} style={{ lineHeight: "1.5rem" }}>{i + 1}</div>
                             ))}
                         </div>
-
-                        {/* Code */}
                         <pre
                             className={`flex-1 p-6 text-xs font-mono leading-6 ${wordWrap
-                                    ? "whitespace-pre-wrap break-all overflow-x-hidden"
-                                    : "whitespace-pre overflow-x-auto"
+                                ? "whitespace-pre-wrap break-all overflow-x-hidden"
+                                : "whitespace-pre overflow-x-auto"
                                 }`}
                             style={{ color: codeFg, background: codeBg }}
                         >
